@@ -5,22 +5,24 @@
     <title>Elite Offline Editor</title>
 
     <script src="./tinymce/js/tinymce/tinymce.min.js"></script>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
 
   <body>
     <div class="container">
       <div class="html-pane">
-        <h3>Clean HTML</h3>
-        <button onclick="copyHTML()">Copy HTML</button>
-        <div id="htmlOutput"></div>
+        <span
+          ><button onclick="copyHTML()">Copy HTML</button>
+          <button onclick="clearSaved()">Clear Saved Data</button></span
+        >
+        <textarea id="htmlOutput" spellcheck="false"></textarea>
       </div>
-
+      <div id="divider"></div>
       <div class="editor-pane">
         <textarea id="editor"></textarea>
       </div>
     </div>
 
-    <script src="loader.js"></script>
+    <script src="/loader.js"></script>
   </body>
 </html>

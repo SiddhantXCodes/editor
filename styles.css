@@ -41,12 +41,12 @@ body{
 /* Clean HTML viewer */
 
 #htmlOutput{
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
+  width:100%;
+  height:100%;
+  resize:none;
   font-family: monospace;
-  font-size:14px;
-  line-height:1.5;
 }
+
 
 /* ===== RIGHT PANEL ===== */
 
@@ -86,3 +86,64 @@ button:hover{
 }
 
 
+.html-pane{
+
+  background:#020617;              /* deeper editor color */
+  color:#e2e8f0;
+
+  padding:16px;
+
+  display:flex;                    /* ⭐ IMPORTANT */
+  flex-direction:column;
+  gap:10px;
+}
+#htmlOutput{
+  flex:1;                         /* fills remaining space */
+  width:100%;
+
+  border:none;
+  outline:none;
+  resize:none;
+
+  padding:14px;
+
+  font-family: Consolas, monospace;
+  font-size:14px;
+  line-height:1.6;
+
+  background:#020617;
+  color:#e2e8f0;
+
+  border-radius:8px;
+
+  box-shadow:
+    inset 0 0 0 1px #1e293b;
+}
+#htmlOutput:focus{
+
+  box-shadow:
+    inset 0 0 0 1px #2563eb,
+    0 0 12px rgba(37,99,235,0.25);
+
+}
+.html-pane h3{
+  margin:0;
+  font-size:16px;
+}
+
+.html-pane button{
+  align-self:flex-start;
+}
+/* ===== DRAG DIVIDER ===== */
+
+#divider{
+  width:6px;
+  cursor:col-resize;
+  background:#1e293b;
+
+  transition:background 0.2s;
+}
+
+#divider:hover{
+  background:#2563eb;
+}
