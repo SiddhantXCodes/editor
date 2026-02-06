@@ -1,0 +1,88 @@
+
+/* GLOBAL RESET — prevents width bugs */
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  height:100vh;
+  overflow:hidden; /* prevents body scroll */
+}
+
+/* ===== MAIN LAYOUT ===== */
+
+.container{
+  display:flex;
+  height:100vh;
+  min-height:0;      /* ⭐ CRITICAL for flex */
+  overflow:hidden;
+}
+
+/* ===== BOTH PANELS ===== */
+
+.html-pane,
+.editor-pane{
+  flex:1;            /* ⭐ better than width:50% */
+  min-width:0;       /* ⭐ prevents horizontal overflow */
+  min-height:0;      /* ⭐ prevents vertical overflow */
+}
+
+/* ===== LEFT PANEL ===== */
+
+.html-pane{
+  background:#0f172a;
+  color:#e2e8f0;
+  padding:18px;
+  overflow:auto;
+}
+
+/* Clean HTML viewer */
+
+#htmlOutput{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font-family: monospace;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* ===== RIGHT PANEL ===== */
+
+.editor-pane{
+  padding:12px;
+  display:flex;
+  flex-direction:column; /* ⭐ REQUIRED for Tiny */
+  overflow:hidden;
+}
+
+/* ⭐ FORCE Tiny to respect container */
+
+.tox-tinymce{
+  flex:1 !important;
+  min-height:0 !important;
+}
+
+/* Prevent internal iframe overflow */
+.tox-editor-container{
+  min-height:0 !important;
+}
+
+/* ===== BUTTON ===== */
+
+button{
+  padding:8px 14px;
+  cursor:pointer;
+  margin-bottom:10px;
+  border:none;
+  background:#2563eb;
+  color:white;
+  border-radius:6px;
+}
+
+button:hover{
+  background:#1e40af;
+}
+
+
