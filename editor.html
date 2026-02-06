@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Elite Offline Editor</title>
+
+<script src="./tinymce/js/tinymce/tinymce.min.js"></script>
+
+<style>
+/* GLOBAL RESET — prevents width bugs */
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  height:100vh;
+  overflow:hidden; /* prevents body scroll */
+}
+
+/* ===== MAIN LAYOUT ===== */
+
+.container{
+  display:flex;
+  height:100vh;
+  min-height:0;      /* ⭐ CRITICAL for flex */
+  overflow:hidden;
+}
+
+/* ===== BOTH PANELS ===== */
+
+.html-pane,
+.editor-pane{
+  flex:1;            /* ⭐ better than width:50% */
+  min-width:0;       /* ⭐ prevents horizontal overflow */
+  min-height:0;      /* ⭐ prevents vertical overflow */
+}
+
+/* ===== LEFT PANEL ===== */
+
+.html-pane{
+  background:#0f172a;
+  color:#e2e8f0;
+  padding:18px;
+  overflow:auto;
+}
+
+/* Clean HTML viewer */
+
+#htmlOutput{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font-family: monospace;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* ===== RIGHT PANEL ===== */
+
+.editor-pane{
+  padding:12px;
+  display:flex;
+  flex-direction:column; /* ⭐ REQUIRED for Tiny */
+  overflow:hidden;
+}
+
+/* ⭐ FORCE Tiny to respect container */
+
+.tox-tinymce{
+  flex:1 !important;
+  min-height:0 !important;
+}
+
+/* Prevent internal iframe overflow */
+.tox-editor-container{
+  min-height:0 !important;
+}
+
+/* ===== BUTTON ===== */
+
+button{
+  padding:8px 14px;
+  cursor:pointer;
+  margin-bottom:10px;
+  border:none;
+  background:#2563eb;
+  color:white;
+  border-radius:6px;
+}
+
+button:hover{
+  background:#1e40af;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="html-pane">
+    <h3>Clean HTML</h3>
+    <button onclick="copyHTML()">Copy HTML</button>
+    <div id="htmlOutput"></div>
+  </div>
+
+  <div class="editor-pane">
+    <textarea id="editor"></textarea>
+  </div>
+
+</div>
+
+<script>
+
+/* ================= FORMATTER ================= */
+
+function formatHTML(html){
+
+  const tab = "  ";
+  let result = "";
+  let indent = 0;
+
+  html.replace(/>\s*</g,'>\n<')
+  .split('\n')
+  .forEach(line => {
+
+    line = line.trim();
+
+    if(line.match(/^<\/.+>/)) indent--;
+
+    result += tab.repeat(Math.max(indent,0)) + line + "\n";
+
+    if(line.match(/^<[^\/!][^>]*[^\/]>$/)) indent++;
+
+  });
+
+  return result.trim();
+}
+
+/* ================= CLEANER ================= */
+
+function cleanHTML(html){
+
+return formatHTML(
+  html
+    .replace(/<figure[^>]*>/gi,'')
+    .replace(/<\/figure>/gi,'')
+    .replace(/&nbsp;/g,' ')
+    .trim()
+);
+
+}
+
+/* ================= TINYMCE ================= */
+
+tinymce.init({
+
+  selector:'#editor',
+
+  /* 🔥 CRITICAL FOR SELF HOST */
+  base_url: './tinymce/js/tinymce',
+  suffix: '.min',
+
+  height:"100%",
+  menubar:true,
+
+  plugins: [
+    'advlist','autolink','lists','link','image','table',
+    'charmap','anchor','searchreplace','visualblocks',
+    'code','fullscreen','preview','insertdatetime',
+    'help','wordcount','quickbars'
+  ],
+
+  toolbar: `
+    undo redo |
+    blocks |
+    bold italic underline |
+    alignleft aligncenter alignright alignjustify |
+    bullist numlist |
+    table image link |
+    removeformat |
+    code fullscreen preview
+  `,
+
+  toolbar_mode:'wrap',
+  toolbar_sticky:true,
+
+  menubar:'file edit view insert format tools table help',
+
+  /* SEO SAFE */
+  block_formats:
+    'Paragraph=p; Heading 2=h2; Heading 3=h3; Heading 4=h4',
+
+  forced_root_block:'p',
+
+  /* CLEAN OUTPUT */
+  invalid_styles:{
+    '*':'color font-size font-family background'
+  },
+license_key: 'gpl',
+
+  paste_remove_styles:true,
+  paste_remove_spans:true,
+  paste_strip_class_attributes:"all",
+
+  table_toolbar:
+    'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+
+  table_default_styles:{
+    'border-collapse':'collapse',
+    width:'100%'
+  },
+
+  image_caption:true,
+  browser_spellcheck:true,
+  entity_encoding:"raw",
+
+  branding:false,
+
+  setup:function(editor){
+
+    editor.on('keyup change paste', debounce(updateHTML,300));
+
+    editor.on('init', updateHTML);
+  }
+
+});
+
+/* ================= PERFORMANCE ================= */
+
+function debounce(func,wait){
+  let t;
+  return function(){
+    clearTimeout(t);
+    t=setTimeout(func,wait);
+  }
+}
+
+/* ================= PREVIEW ================= */
+
+function updateHTML(){
+
+let html = tinymce.get('editor').getContent();
+html = cleanHTML(html);
+
+document.getElementById('htmlOutput').innerText = html;
+}
+
+/* ================= COPY ================= */
+
+function copyHTML(){
+
+let html = document.getElementById('htmlOutput').innerText;
+
+navigator.clipboard.writeText(html);
+
+alert("Clean HTML copied!");
+
+}
+
+</script>
+
+</body>
+</html>
